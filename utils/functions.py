@@ -19,6 +19,8 @@ def convert_to_datetime(data):
 def sort_data(data):
     return sorted(data, reverse=True, key=lambda x: x['date'])
 
+
+"""Publish set number of last operations and checking for errors"""
 def publish_operations(sorted_data, NUMBER_OF_LAST_OPERATIONS):
     published_operations = 0
     n = 0
