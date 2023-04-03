@@ -19,6 +19,46 @@ def convert_to_datetime(data):
 def sort_data(data):
     return sorted(data, reverse=True, key=lambda x: x['date'])
 
+"""Function gets date and change date format and returns default error if it is not valid data"""
+def get_date(sorted_data, n):
+        try:
+                return sorted_data[n]['date'].strftime("%d.%m.%Y")
+        except KeyError:
+                return "<Нет данных о дате и времени операции>"
+
+"""Function gets description and returns default error if it is not valid data"""
+def get_description(sorted_data, n):
+    try:
+        return sorted_data[n]['description']
+    except KeyError:
+        return "<Нет описания операции>"
+
+"""Function gets from data, check if it is account or card, add asterix and returns default error if it is not valid data"""
+def get_from(sorted_data, n):
+    try:
+        if "Счет" in sorted_data[n]['from']:
+            return f"Счет **{sorted_data[n]['from'][-4:]}"
+        else:
+            return f"{sorted_data[n]['from'][:-12]} {sorted_data[n]['from'][-12:-10]}** **** {sorted_data[n]['from'][-4:]}"
+    except KeyError:
+        return "<Нет данных об отправителе>"
+
+"""Function gets to data, check if it is account or card, add asterix and returns default error if it is not valid data"""
+def get_to(sorted_data, n):
+    try:
+        if "Счет" in sorted_data[n]['to']:
+            return f"Счет **{sorted_data[n]['to'][-4:]}"
+        else:
+            return f"{sorted_data[n]['to'][:-12]} {sorted_data[n]['to'][-12:-10]}** **** {sorted_data[n]['to'][-4:]}"
+    except KeyError:
+        return "<Нет данных о получателе>"
+
+"""Function gets amount and currency and returns default error if it is not valid data"""
+def get_amount(sorted_data, n):
+    try:
+        return f"{sorted_data[n]['operationAmount']['amount']} {sorted_data[n]['operationAmount']['currency']['name']}"
+    except KeyError:
+        return "<Нет данных о сумме операции>"
 
 """Publish set number of last operations and checking for errors"""
 def publish_operations(sorted_data, NUMBER_OF_LAST_OPERATIONS):
@@ -27,38 +67,9 @@ def publish_operations(sorted_data, NUMBER_OF_LAST_OPERATIONS):
     while published_operations < NUMBER_OF_LAST_OPERATIONS:
         if sorted_data[n]['state'] == "EXECUTED":
             published_operations += 1
-            try:
-                print(sorted_data[n]['date'].strftime("%d.%m.%Y"), end=" ")
-            except KeyError:
-                print("<Нет данных о дате и времени операции>", end=" ")
-
-            try:
-                print(sorted_data[n]['description'])
-            except KeyError:
-                print("<Нет описания операции>")
-
-            try:
-                if "Счет" in sorted_data[n]['from']:
-                    print(f"Счет **{sorted_data[n]['from'][-4:]}", end=" -> ")
-                else:
-                    print(
-                        f"{sorted_data[n]['from'][:-12]} {sorted_data[n]['from'][-12:-10]}** **** {sorted_data[n]['from'][-4:]}",
-                        end=" -> ")
-            except KeyError:
-                print("<Нет данных об отправителе>", end=" -> ")
-
-            try:
-                if "Счет" in sorted_data[n]['to']:
-                    print(f"Счет **{sorted_data[n]['to'][-4:]}")
-                else:
-                    print(
-                        f"{sorted_data[n]['to'][:-12]} {sorted_data[n]['to'][-12:-10]}** **** {sorted_data[n]['to'][-4:]}")
-            except KeyError:
-                print("<Нет данных о получателе>")
-
-            try:
-                print(sorted_data[n]['operationAmount']['amount'],
-                      sorted_data[n]['operationAmount']['currency']['name'], end="\n\n")
-            except KeyError:
-                print("<Нет данных о сумме операции>", end="\n\n")
+            print(get_date(sorted_data, n), end=" ")
+            print(get_description(sorted_data, n))
+            print(get_from(sorted_data, n), end=" -> ")
+            print(get_to(sorted_data, n))
+            print(get_amount(sorted_data,n), end="\n\n")
         n += 1

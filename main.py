@@ -1,5 +1,3 @@
-import json
-from datetime import datetime
 from utils.functions import open_json, convert_to_datetime, sort_data, publish_operations
 
 NUMBER_OF_LAST_OPERATIONS = 5  #set the number of last operations to display
